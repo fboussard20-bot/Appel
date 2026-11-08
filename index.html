@@ -17,11 +17,16 @@ a.alt { display: block; margin-top: 12px; color: var(--muted); font-size: .9rem;
 <body><div class="card" id="c"><h1>Provence Travaux</h1><p>Rien à appeler.</p></div>
 <script>
 const q = new URLSearchParams(location.hash.slice(1));
-const tel = q.get("tel"), mail = q.get("mail"), name = q.get("n") || "", subj = q.get("s") || "", body = q.get("b") || "";
+const wa = q.get("wa"), tel = q.get("tel"), mail = q.get("mail"), name = q.get("n") || "", subj = q.get("s") || "", body = q.get("b") || "";
 const esc = (s) => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const fmt = (t) => t.replace(/^\+33/, "0").replace(/(\d{2})(?=\d)/g, "$1 ").trim();
 const c = document.getElementById("c");
-if (tel) {
+if (wa) {
+  // WhatsApp Business d'abord ; lien de secours vers WhatsApp classique
+  const num = wa.replace(/\D/g, ""); const href = "whatsapp-smb://send?phone=" + num;
+  c.innerHTML = `<h1>${esc(name || "WhatsApp")}</h1><p>${esc(fmt("+" + num))}</p><a class="go" style="background:#1fa855" href="${href}">Ouvrir WhatsApp Business</a><a class="alt" href="https://wa.me/${num}">ou avec WhatsApp</a><div class="back">Fermez cet onglet pour revenir au tableau de bord.</div>`;
+  location.href = href;
+} else if (tel) {
   const href = "tel:" + tel.replace(/[^\d+]/g, "");
   c.innerHTML = `<h1>${esc(name || "Appeler")}</h1><p>${esc(fmt(tel))}</p><a class="go" href="${href}">Appeler</a><div class="back">Après l'appel, fermez cet onglet pour revenir au tableau de bord.</div>`;
   location.href = href;
